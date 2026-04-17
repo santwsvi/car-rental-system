@@ -9,5 +9,7 @@ import java.util.Optional;
 @Repository
 public interface BankRepository extends JpaRepository<Bank, Long> {
     Optional<Bank> findByCnpj(String cnpj);
+    Optional<Bank> findByEmail(String email);
 }
+
 

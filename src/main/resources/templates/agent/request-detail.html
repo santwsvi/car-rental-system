@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Avaliar Pedido — Car Rental System</title>
+    <title th:text="'Avaliar Pedido #' + ${request.id} + ' — Car Rental System'">Avaliar Pedido</title>
     <link rel="stylesheet" th:href="@{/static/css/style.css}"/>
 </head>
 <body>
@@ -21,16 +21,47 @@
 
 <main class="container main-content">
 
+    <div class="breadcrumb">
+        <a th:href="@{/agent/requests}">Painel Agente</a>
+        <span class="breadcrumb-separator">›</span>
+        <span th:text="'Pedido #' + ${request.id}">Pedido</span>
+    </div>
+
     <div class="page-header">
         <h1 th:text="'Avaliar Pedido #' + ${request.id}">Avaliar Pedido</h1>
-        <a th:href="@{/agent/requests}" class="btn btn-secondary">Voltar</a>
+        <a th:href="@{/agent/requests}" class="btn btn-secondary">← Voltar</a>
     </div>
 
     <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
+    <!-- Status Pipeline -->
+    <div class="status-pipeline">
+        <div class="pipeline-step"
+             th:classappend="${request.status == 'PENDING' ? 'active' : request.status != 'CANCELLED' ? 'completed' : 'completed'}">
+            <div class="pipeline-dot">1</div><span>Pendente</span>
+        </div>
+        <div class="pipeline-line" th:classappend="${request.status != 'PENDING' and request.status != 'CANCELLED' ? 'completed' : ''}"></div>
+        <div class="pipeline-step"
+             th:classappend="${request.status == 'UNDER_REVIEW' ? 'active' : (request.status == 'APPROVED' or request.status == 'CONTRACTED' or request.status == 'REJECTED') ? 'completed' : ''}">
+            <div class="pipeline-dot">2</div><span>Em Análise</span>
+        </div>
+        <div class="pipeline-line" th:classappend="${request.status == 'APPROVED' or request.status == 'CONTRACTED' ? 'completed' : ''}"></div>
+        <div class="pipeline-step"
+             th:classappend="${request.status == 'APPROVED' ? 'active' : request.status == 'CONTRACTED' ? 'completed' : request.status == 'REJECTED' ? 'failed' : ''}">
+            <div class="pipeline-dot" th:text="${request.status == 'REJECTED' ? '✕' : '3'}">3</div>
+            <span th:text="${request.status == 'REJECTED' ? 'Rejeitado' : 'Aprovado'}">Aprovado</span>
+        </div>
+        <div class="pipeline-line" th:classappend="${request.status == 'CONTRACTED' ? 'completed' : ''}"></div>
+        <div class="pipeline-step"
+             th:classappend="${request.status == 'CONTRACTED' ? 'completed' : request.status == 'CANCELLED' ? 'failed' : ''}">
+            <div class="pipeline-dot" th:text="${request.status == 'CANCELLED' ? '✕' : '4'}">4</div>
+            <span th:text="${request.status == 'CANCELLED' ? 'Cancelado' : 'Contratado'}">Contratado</span>
+        </div>
+    </div>
+
     <!-- Informações do Pedido -->
     <section class="card">
-        <h2>Informações do Pedido</h2>
+        <h2><span class="card-icon">📋</span> Informações do Pedido</h2>
         <div class="detail-grid">
             <div class="detail-item"><label>Cliente</label><span th:text="${request.clientName}"></span></div>
             <div class="detail-item"><label>Início</label><span th:text="${request.startDate}"></span></div>
@@ -38,12 +69,8 @@
             <div class="detail-item">
                 <label>Status</label>
                 <span class="badge"
-                      th:classappend="${request.status == 'APPROVED' ? 'badge-success' :
-                                       request.status == 'REJECTED' ? 'badge-danger' :
-                                       request.status == 'CANCELLED' ? 'badge-danger' :
-                                       request.status == 'CONTRACTED' ? 'badge-info' :
-                                       'badge-warning'}"
-                      th:text="${request.status}"></span>
+                      th:classappend="${request.status == 'APPROVED' ? 'badge-success' : request.status == 'REJECTED' ? 'badge-danger' : request.status == 'CANCELLED' ? 'badge-danger' : request.status == 'CONTRACTED' ? 'badge-info' : request.status == 'UNDER_REVIEW' ? 'badge-purple' : 'badge-warning'}"
+                      th:text="${request.status == 'PENDING' ? 'Pendente' : request.status == 'UNDER_REVIEW' ? 'Em Análise' : request.status == 'APPROVED' ? 'Aprovado' : request.status == 'REJECTED' ? 'Rejeitado' : request.status == 'CONTRACTED' ? 'Contratado' : request.status == 'CANCELLED' ? 'Cancelado' : request.status}"></span>
             </div>
             <div class="detail-item" th:if="${request.notes != null and !request.notes.isEmpty()}">
                 <label>Observações</label>
@@ -54,70 +81,98 @@
 
     <!-- Ações do Agente -->
     <section class="card">
-        <h2>Ações do Agente</h2>
+        <h2><span class="card-icon">⚡</span> Ações Disponíveis</h2>
 
-        <!-- Enviar para Análise (PENDING → UNDER_REVIEW) -->
-        <div th:if="${request.status == 'PENDING'}" class="form-actions" style="margin-bottom: 1rem;">
-            <form th:action="@{/agent/requests/{id}/submit-review(id=${request.id})}" method="post" class="inline-form">
+        <!-- PENDING: Enviar para Análise -->
+        <div th:if="${request.status == 'PENDING'}" class="action-card">
+            <div class="action-card-header">
+                <div class="action-card-icon" style="background: var(--color-primary-light);">📋</div>
+                <div>
+                    <div class="action-card-title">Enviar para Análise</div>
+                    <div class="action-card-desc">Submeter o pedido para avaliação financeira</div>
+                </div>
+            </div>
+            <form th:action="@{/agent/requests/{id}/submit-review(id=${request.id})}" method="post">
                 <button type="submit" class="btn btn-primary">📋 Enviar para Análise</button>
             </form>
         </div>
 
-        <!-- Aprovar / Rejeitar (UNDER_REVIEW → APPROVED / REJECTED) -->
-        <div th:if="${request.status == 'UNDER_REVIEW'}">
-            <div class="form-card" style="margin-bottom: 1rem;">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Nome do Agente</label>
-                        <input type="text" id="agentNameGlobal" class="form-control" value="Agente Avaliador" />
-                    </div>
-                    <div class="form-group">
-                        <label>Tipo do Agente</label>
-                        <select id="agentRoleGlobal" class="form-control">
-                            <option value="AGENT_COMPANY">Empresa</option>
-                            <option value="AGENT_BANK">Banco</option>
-                        </select>
-                    </div>
+        <!-- UNDER_REVIEW: Aprovar / Rejeitar -->
+        <div th:if="${request.status == 'UNDER_REVIEW'}" class="action-card">
+            <div class="action-card-header">
+                <div class="action-card-icon" style="background: var(--color-purple-light);">🔍</div>
+                <div>
+                    <div class="action-card-title">Avaliação Financeira</div>
+                    <div class="action-card-desc">Informe o agente avaliador e aprove ou rejeite o pedido</div>
                 </div>
-
-                <div class="form-actions">
-                    <form th:action="@{/agent/requests/{id}/approve(id=${request.id})}" method="post" class="inline-form"
-                          onsubmit="this.querySelector('[name=agentName]').value=document.getElementById('agentNameGlobal').value; this.querySelector('[name=agentRole]').value=document.getElementById('agentRoleGlobal').value;">
-                        <input type="hidden" name="agentName" value=""/>
-                        <input type="hidden" name="agentRole" value=""/>
-                        <button type="submit" class="btn btn-success">✅ Aprovar</button>
-                    </form>
-                    <form th:action="@{/agent/requests/{id}/reject(id=${request.id})}" method="post" class="inline-form"
-                          onsubmit="this.querySelector('[name=agentName]').value=document.getElementById('agentNameGlobal').value; this.querySelector('[name=agentRole]').value=document.getElementById('agentRoleGlobal').value; return confirm('Confirma rejeição?');">
-                        <input type="hidden" name="agentName" value=""/>
-                        <input type="hidden" name="agentRole" value=""/>
-                        <button type="submit" class="btn btn-danger">❌ Rejeitar</button>
-                    </form>
+            </div>
+            <div class="form-row mb-4">
+                <div class="form-group">
+                    <label>Nome do Agente</label>
+                    <input type="text" id="agentNameGlobal" class="form-control" value="Agente Avaliador" />
                 </div>
+                <div class="form-group">
+                    <label>Tipo do Agente</label>
+                    <select id="agentRoleGlobal" class="form-control">
+                        <option value="AGENT_COMPANY">Empresa</option>
+                        <option value="AGENT_BANK">Banco</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-actions" style="margin-top: 0;">
+                <form th:action="@{/agent/requests/{id}/approve(id=${request.id})}" method="post" class="inline-form"
+                      onsubmit="this.querySelector('[name=agentName]').value=document.getElementById('agentNameGlobal').value; this.querySelector('[name=agentRole]').value=document.getElementById('agentRoleGlobal').value;">
+                    <input type="hidden" name="agentName" value=""/>
+                    <input type="hidden" name="agentRole" value=""/>
+                    <button type="submit" class="btn btn-success">✅ Aprovar</button>
+                </form>
+                <form th:action="@{/agent/requests/{id}/reject(id=${request.id})}" method="post" class="inline-form"
+                      onsubmit="this.querySelector('[name=agentName]').value=document.getElementById('agentNameGlobal').value; this.querySelector('[name=agentRole]').value=document.getElementById('agentRoleGlobal').value; return confirm('Confirma rejeição deste pedido?');">
+                    <input type="hidden" name="agentName" value=""/>
+                    <input type="hidden" name="agentRole" value=""/>
+                    <button type="submit" class="btn btn-danger">❌ Rejeitar</button>
+                </form>
             </div>
         </div>
 
-        <!-- Executar Contrato / Conceder Crédito (APPROVED) -->
-        <div th:if="${request.status == 'APPROVED'}" class="form-actions" style="margin-bottom: 1rem;">
-            <a th:href="@{/contracts/execute/{id}(id=${request.id})}" class="btn btn-primary">📝 Executar Contrato</a>
-            <a th:href="@{/contracts/credit/{id}(id=${request.id})}" class="btn btn-info">💳 Conceder Crédito</a>
+        <!-- APPROVED: Executar Contrato / Conceder Crédito -->
+        <div th:if="${request.status == 'APPROVED'}">
+            <div class="action-card">
+                <div class="action-card-header">
+                    <div class="action-card-icon" style="background: var(--color-success-light);">📝</div>
+                    <div>
+                        <div class="action-card-title">Executar Contrato de Aluguel</div>
+                        <div class="action-card-desc">Vincular automóvel e finalizar o contrato</div>
+                    </div>
+                </div>
+                <a th:href="@{/contracts/execute/{id}(id=${request.id})}" class="btn btn-primary">📝 Executar Contrato →</a>
+            </div>
+            <div class="action-card">
+                <div class="action-card-header">
+                    <div class="action-card-icon" style="background: var(--color-info-light);">💳</div>
+                    <div>
+                        <div class="action-card-title">Conceder Crédito</div>
+                        <div class="action-card-desc">Emitir contrato de crédito bancário para o pedido</div>
+                    </div>
+                </div>
+                <a th:href="@{/contracts/credit/{id}(id=${request.id})}" class="btn btn-info">💳 Conceder Crédito →</a>
+            </div>
         </div>
 
         <!-- Modificar Pedido -->
-        <div th:if="${request.canModify}" style="margin-top: 1rem;">
+        <div th:if="${request.canModify}" class="mt-4">
             <a th:href="@{/agent/requests/{id}/edit(id=${request.id})}" class="btn btn-warning">✏️ Modificar Pedido</a>
         </div>
 
-        <div th:if="${request.status == 'CONTRACTED'}">
-            <p class="text-muted">✅ Este pedido já possui contrato executado.</p>
+        <!-- Terminal States -->
+        <div th:if="${request.status == 'CONTRACTED'}" class="action-card" style="border-color: var(--color-success-light); background: var(--color-success-light);">
+            <p style="color: #065F46; font-weight: 600; margin: 0;">✅ Este pedido já possui contrato de aluguel executado.</p>
         </div>
-
-        <div th:if="${request.status == 'REJECTED'}">
-            <p class="text-muted">❌ Este pedido foi rejeitado.</p>
+        <div th:if="${request.status == 'REJECTED'}" class="action-card" style="border-color: var(--color-danger-light); background: var(--color-danger-light);">
+            <p style="color: #991B1B; font-weight: 600; margin: 0;">❌ Este pedido foi rejeitado na avaliação financeira.</p>
         </div>
-
-        <div th:if="${request.status == 'CANCELLED'}">
-            <p class="text-muted">🚫 Este pedido foi cancelado pelo cliente.</p>
+        <div th:if="${request.status == 'CANCELLED'}" class="action-card" style="border-color: var(--color-gray-200); background: var(--color-gray-100);">
+            <p style="color: var(--color-gray-600); font-weight: 600; margin: 0;">🚫 Este pedido foi cancelado pelo cliente.</p>
         </div>
     </section>
 

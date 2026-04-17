@@ -22,42 +22,49 @@
 <main class="container main-content">
 
     <div class="page-header">
-        <h1>🏢 Painel do Agente — Avaliação de Pedidos</h1>
+        <div>
+            <h1>🏢 Painel do Agente</h1>
+            <p class="page-header-subtitle">Avalie pedidos, aprove contratos e gerencie crédito</p>
+        </div>
     </div>
 
     <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
 
-    <div class="table-responsive">
-        <table class="table" th:if="${!requests.isEmpty()}">
+    <div class="table-responsive" th:if="${!requests.isEmpty()}">
+        <table class="table">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>Pedido</th>
                     <th>Cliente</th>
-                    <th>Início</th>
-                    <th>Término</th>
+                    <th>Período</th>
                     <th>Status</th>
-                    <th>Avaliado por</th>
+                    <th>Avaliador</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
                 <tr th:each="req : ${requests}">
-                    <td th:text="${req.id}"></td>
-                    <td th:text="${req.clientName}"></td>
-                    <td th:text="${req.startDate}"></td>
-                    <td th:text="${req.endDate}"></td>
+                    <td class="td-id" th:text="'#' + ${req.id}"></td>
+                    <td class="td-name" th:text="${req.clientName}"></td>
+                    <td class="td-date" th:text="${req.startDate + ' → ' + req.endDate}"></td>
                     <td>
                         <span class="badge"
                               th:classappend="${req.status == 'APPROVED' ? 'badge-success' :
                                                req.status == 'REJECTED' ? 'badge-danger' :
                                                req.status == 'CANCELLED' ? 'badge-danger' :
                                                req.status == 'CONTRACTED' ? 'badge-info' :
+                                               req.status == 'UNDER_REVIEW' ? 'badge-purple' :
                                                'badge-warning'}"
-                              th:text="${req.status}"></span>
+                              th:text="${req.status == 'PENDING' ? 'Pendente' :
+                                        req.status == 'UNDER_REVIEW' ? 'Em Análise' :
+                                        req.status == 'APPROVED' ? 'Aprovado' :
+                                        req.status == 'REJECTED' ? 'Rejeitado' :
+                                        req.status == 'CONTRACTED' ? 'Contratado' :
+                                        req.status == 'CANCELLED' ? 'Cancelado' : req.status}"></span>
                     </td>
                     <td th:text="${req.evaluatedBy} ?: '—'"></td>
                     <td class="actions">
-                        <a th:href="@{/agent/requests/{id}(id=${req.id})}" class="btn btn-sm btn-info">Avaliar</a>
+                        <a th:href="@{/agent/requests/{id}(id=${req.id})}" class="btn btn-sm btn-primary">Avaliar →</a>
                     </td>
                 </tr>
             </tbody>
@@ -65,7 +72,8 @@
     </div>
 
     <div th:if="${requests.isEmpty()}" class="empty-state">
-        <p>Nenhum pedido encontrado.</p>
+        <div class="empty-state-icon">📊</div>
+        <p>Nenhum pedido para avaliação</p>
     </div>
 
 </main>
@@ -78,4 +86,3 @@
 
 </body>
 </html>
-

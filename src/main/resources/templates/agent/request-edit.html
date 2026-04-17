@@ -21,9 +21,17 @@
 
 <main class="container main-content">
 
+    <div class="breadcrumb">
+        <a th:href="@{/agent/requests}">Painel Agente</a>
+        <span class="breadcrumb-separator">›</span>
+        <a th:href="@{/agent/requests/{id}(id=${requestId})}" th:text="'Pedido #' + ${requestId}">Pedido</a>
+        <span class="breadcrumb-separator">›</span>
+        <span>Modificar</span>
+    </div>
+
     <div class="page-header">
-        <h1 th:text="'Modificar Pedido #' + ${requestId} + ' (Agente)'">Modificar</h1>
-        <a th:href="@{/agent/requests}" class="btn btn-secondary">Voltar</a>
+        <h1 th:text="'Modificar Pedido #' + ${requestId}">Modificar</h1>
+        <a th:href="@{/agent/requests}" class="btn btn-secondary">← Voltar</a>
     </div>
 
     <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
@@ -31,7 +39,7 @@
     <form th:action="@{/agent/requests/{id}/edit(id=${requestId})}" method="post" class="form-card">
 
         <fieldset class="form-section">
-            <legend>Dados do Agente</legend>
+            <legend>🏢 Dados do Agente</legend>
             <div class="form-row">
                 <div class="form-group">
                     <label for="agentName">Nome do Agente *</label>
@@ -41,7 +49,7 @@
         </fieldset>
 
         <fieldset class="form-section">
-            <legend>Dados do Pedido</legend>
+            <legend>📋 Dados do Pedido</legend>
             <div class="form-row">
                 <div class="form-group">
                     <label for="startDate">Data de Início *</label>
@@ -80,4 +88,7 @@
 
 </body>
 </html>
+
+
+
 

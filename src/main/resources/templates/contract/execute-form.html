@@ -21,16 +21,24 @@
 
 <main class="container main-content">
 
+    <div class="breadcrumb">
+        <a th:href="@{/agent/requests}">Painel Agente</a>
+        <span class="breadcrumb-separator">›</span>
+        <a th:href="@{/agent/requests/{id}(id=${requestId})}" th:text="'Pedido #' + ${requestId}">Pedido</a>
+        <span class="breadcrumb-separator">›</span>
+        <span>Executar Contrato</span>
+    </div>
+
     <div class="page-header">
         <h1 th:text="'Executar Contrato — Pedido #' + ${requestId}">Executar Contrato</h1>
-        <a th:href="@{/agent/requests}" class="btn btn-secondary">Voltar</a>
+        <a th:href="@{/agent/requests}" class="btn btn-secondary">← Voltar</a>
     </div>
 
     <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
     <!-- Resumo do pedido -->
     <section class="card">
-        <h2>Resumo do Pedido</h2>
+        <h2><span class="card-icon">📋</span> Resumo do Pedido</h2>
         <div class="detail-grid">
             <div class="detail-item"><label>Cliente</label><span th:text="${request.clientName}"></span></div>
             <div class="detail-item"><label>Início</label><span th:text="${request.startDate}"></span></div>
@@ -44,7 +52,7 @@
 
         <!-- Dados do Automóvel -->
         <fieldset class="form-section">
-            <legend>Dados do Automóvel</legend>
+            <legend>🚗 Dados do Automóvel</legend>
             <div class="form-row">
                 <div class="form-group">
                     <label for="car.registration">Matrícula *</label>
@@ -73,7 +81,7 @@
 
         <!-- Dados do Contrato -->
         <fieldset class="form-section">
-            <legend>Dados do Contrato</legend>
+            <legend>📝 Dados do Contrato</legend>
             <div class="form-row">
                 <div class="form-group">
                     <label for="totalValue">Valor Total (R$) *</label>
@@ -110,4 +118,8 @@
 
 </body>
 </html>
+
+
+
+
 

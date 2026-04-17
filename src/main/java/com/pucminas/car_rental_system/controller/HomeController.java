@@ -14,6 +14,6 @@ public class HomeController {
 
     @Get("/")
     public HttpResponse<?> home() {
-        return HttpResponse.redirect(URI.create("/clients"));
+        return HttpResponse.redirect(URI.create("/login"));
     }
 }

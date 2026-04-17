@@ -21,9 +21,15 @@
 
 <main class="container main-content">
 
+    <div class="breadcrumb">
+        <a th:href="@{/clients}">Clientes</a>
+        <span class="breadcrumb-separator">›</span>
+        <span th:text="${action == 'edit' ? 'Editar' : 'Novo Cliente'}">Ação</span>
+    </div>
+
     <div class="page-header">
         <h1 th:text="${action == 'edit' ? 'Editar Cliente' : 'Novo Cliente'}">Formulário</h1>
-        <a th:href="@{/clients}" class="btn btn-secondary">Voltar</a>
+        <a th:href="@{/clients}" class="btn btn-secondary">← Voltar</a>
     </div>
 
     <!-- Mensagens de erro -->
@@ -34,7 +40,7 @@
 
         <!-- ═══ DADOS PESSOAIS ═══ -->
         <fieldset class="form-section">
-            <legend>Dados Pessoais</legend>
+            <legend>👤 Dados Pessoais</legend>
 
             <div class="form-row">
                 <div class="form-group">
@@ -88,7 +94,7 @@
 
         <!-- ═══ ENDEREÇO ═══ -->
         <fieldset class="form-section">
-            <legend>Endereço</legend>
+            <legend>📍 Endereço</legend>
 
             <div class="form-row">
                 <div class="form-group flex-2">
@@ -134,7 +140,7 @@
 
         <!-- ═══ EMPREGADORES (0..3) ═══ -->
         <fieldset class="form-section">
-            <legend>Empregadores <small class="text-muted">(máximo 3)</small></legend>
+            <legend>🏢 Empregadores <small class="text-muted">(máximo 3)</small></legend>
 
             <div id="employers-container">
                 <div class="employer-row" th:each="i : ${#numbers.sequence(0, 2)}">

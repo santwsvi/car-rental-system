@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Detalhes do Contrato — Car Rental System</title>
+    <title th:text="'Contrato #' + ${contract.id} + ' — Car Rental System'">Detalhes do Contrato</title>
     <link rel="stylesheet" th:href="@{/static/css/style.css}"/>
 </head>
 <body>
@@ -21,15 +21,21 @@
 
 <main class="container main-content">
 
+    <div class="breadcrumb">
+        <a th:href="@{/agent/requests}">Painel Agente</a>
+        <span class="breadcrumb-separator">›</span>
+        <span th:text="'Contrato #' + ${contract.id}">Contrato</span>
+    </div>
+
     <div class="page-header">
         <h1 th:text="'Contrato #' + ${contract.id}">Detalhes do Contrato</h1>
-        <a th:href="@{/agent/requests}" class="btn btn-secondary">Voltar</a>
+        <a th:href="@{/agent/requests}" class="btn btn-secondary">← Voltar</a>
     </div>
 
     <section class="card">
-        <h2>Contrato de Aluguel</h2>
+        <h2><span class="card-icon">📝</span> Contrato de Aluguel</h2>
         <div class="detail-grid">
-            <div class="detail-item"><label>ID</label><span th:text="${contract.id}"></span></div>
+            <div class="detail-item"><label>ID</label><span th:text="'#' + ${contract.id}"></span></div>
             <div class="detail-item"><label>Início</label><span th:text="${contract.startDate}"></span></div>
             <div class="detail-item"><label>Término</label><span th:text="${contract.endDate}"></span></div>
             <div class="detail-item"><label>Valor Total</label><span th:text="'R$ ' + ${contract.totalValue}"></span></div>
@@ -39,7 +45,7 @@
     </section>
 
     <section class="card" th:if="${credit != null}">
-        <h2>Contrato de Crédito</h2>
+        <h2><span class="card-icon">💳</span> Contrato de Crédito</h2>
         <div class="detail-grid">
             <div class="detail-item"><label>Banco</label><span th:text="${credit.bankName}"></span></div>
             <div class="detail-item"><label>Valor do Crédito</label><span th:text="'R$ ' + ${credit.creditValue}"></span></div>
@@ -58,4 +64,3 @@
 
 </body>
 </html>
-

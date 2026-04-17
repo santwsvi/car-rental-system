@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title th:text="'Detalhes do Cliente — Car Rental System'">Detalhes</title>
+    <title th:text="'Cliente: ' + ${client.name} + ' — Car Rental System'">Detalhes</title>
     <link rel="stylesheet" th:href="@{/static/css/style.css}"/>
 </head>
 <body>
@@ -12,7 +12,7 @@
     <div class="container navbar-content">
         <a th:href="@{/}" class="navbar-brand">🚗 <span>Car Rental System</span></a>
         <nav class="navbar-nav">
-            <a th:href="@{/clients}" class="nav-link">Clientes</a>
+            <a th:href="@{/clients}" class="nav-link active">Clientes</a>
             <a th:href="@{/rental-requests}" class="nav-link">Pedidos</a>
             <a th:href="@{/agent/requests}" class="nav-link">Painel Agente</a>
         </nav>
@@ -21,26 +21,31 @@
 
 <main class="container main-content">
 
+    <div class="breadcrumb">
+        <a th:href="@{/clients}">Clientes</a>
+        <span class="breadcrumb-separator">›</span>
+        <span th:text="${client.name}">Nome</span>
+    </div>
+
     <div class="page-header">
-        <h1 th:text="'Cliente: ' + ${client.name}">Detalhes do Cliente</h1>
+        <h1 th:text="${client.name}">Detalhes do Cliente</h1>
         <div class="header-actions">
-            <a th:href="@{/clients/{id}/edit(id=${client.id})}" class="btn btn-warning">Editar</a>
-            <a th:href="@{/clients}" class="btn btn-secondary">Voltar</a>
+            <a th:href="@{/clients/{id}/edit(id=${client.id})}" class="btn btn-warning">✏️ Editar</a>
+            <a th:href="@{/clients}" class="btn btn-secondary">← Voltar</a>
         </div>
     </div>
 
     <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
-    <!-- Dados Pessoais -->
     <section class="card">
-        <h2>Dados Pessoais</h2>
+        <h2><span class="card-icon">👤</span> Dados Pessoais</h2>
         <div class="detail-grid">
             <div class="detail-item">
                 <label>ID</label>
-                <span th:text="${client.id}"></span>
+                <span th:text="'#' + ${client.id}"></span>
             </div>
             <div class="detail-item">
-                <label>Nome</label>
+                <label>Nome Completo</label>
                 <span th:text="${client.name}"></span>
             </div>
             <div class="detail-item">
@@ -66,25 +71,20 @@
         </div>
     </section>
 
-    <!-- Endereço -->
     <section class="card" th:if="${client.address != null}">
-        <h2>Endereço</h2>
+        <h2><span class="card-icon">📍</span> Endereço</h2>
         <div class="detail-grid">
             <div class="detail-item">
-                <label>Rua</label>
-                <span th:text="${client.address.street + ', ' + client.address.number}"></span>
+                <label>Logradouro</label>
+                <span th:text="${client.address.street + ', nº ' + client.address.number}"></span>
             </div>
             <div class="detail-item" th:if="${client.address.complement != null and !client.address.complement.isEmpty()}">
                 <label>Complemento</label>
                 <span th:text="${client.address.complement}"></span>
             </div>
             <div class="detail-item">
-                <label>Cidade</label>
-                <span th:text="${client.address.city}"></span>
-            </div>
-            <div class="detail-item">
-                <label>Estado</label>
-                <span th:text="${client.address.state}"></span>
+                <label>Cidade / UF</label>
+                <span th:text="${client.address.city + ' — ' + client.address.state}"></span>
             </div>
             <div class="detail-item">
                 <label>CEP</label>
@@ -97,9 +97,8 @@
         </div>
     </section>
 
-    <!-- Empregadores -->
     <section class="card">
-        <h2>Empregadores</h2>
+        <h2><span class="card-icon">🏢</span> Empregadores</h2>
         <div th:if="${client.employers != null and !client.employers.isEmpty()}">
             <table class="table">
                 <thead>
@@ -111,8 +110,8 @@
                 </thead>
                 <tbody>
                     <tr th:each="employer, stat : ${client.employers}">
-                        <td th:text="${stat.index + 1}"></td>
-                        <td th:text="${employer.name}"></td>
+                        <td class="td-id" th:text="${stat.index + 1}"></td>
+                        <td class="td-name" th:text="${employer.name}"></td>
                         <td th:text="${#numbers.formatDecimal(employer.income, 1, 'POINT', 2, 'COMMA')}"></td>
                     </tr>
                 </tbody>
@@ -123,14 +122,13 @@
         </p>
     </section>
 
-    <!-- Ações -->
     <div class="form-actions">
-        <a th:href="@{/clients/{id}/edit(id=${client.id})}" class="btn btn-warning">Editar</a>
+        <a th:href="@{/clients/{id}/edit(id=${client.id})}" class="btn btn-warning">✏️ Editar</a>
         <form th:action="@{/clients/{id}/delete(id=${client.id})}" method="post" class="inline-form"
               onsubmit="return confirm('Tem certeza que deseja excluir este cliente?');">
-            <button type="submit" class="btn btn-danger">Excluir</button>
+            <button type="submit" class="btn btn-danger">🗑️ Excluir</button>
         </form>
-        <a th:href="@{/clients}" class="btn btn-secondary">Voltar à lista</a>
+        <a th:href="@{/clients}" class="btn btn-secondary">← Voltar à lista</a>
     </div>
 
 </main>
@@ -143,5 +141,3 @@
 
 </body>
 </html>
-
-

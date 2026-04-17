@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Detalhes do Pedido — Car Rental System</title>
+    <title th:text="'Pedido #' + ${request.id} + ' — Car Rental System'">Detalhes do Pedido</title>
     <link rel="stylesheet" th:href="@{/static/css/style.css}"/>
 </head>
 <body>
@@ -13,7 +13,7 @@
         <a th:href="@{/}" class="navbar-brand">🚗 <span>Car Rental System</span></a>
         <nav class="navbar-nav">
             <a th:href="@{/clients}" class="nav-link">Clientes</a>
-            <a th:href="@{/rental-requests}" class="nav-link">Pedidos</a>
+            <a th:href="@{/rental-requests}" class="nav-link active">Pedidos</a>
             <a th:href="@{/agent/requests}" class="nav-link">Painel Agente</a>
         </nav>
     </div>
@@ -21,22 +21,60 @@
 
 <main class="container main-content">
 
+    <div class="breadcrumb">
+        <a th:href="@{/rental-requests}">Pedidos</a>
+        <span class="breadcrumb-separator">›</span>
+        <span th:text="'Pedido #' + ${request.id}">Pedido</span>
+    </div>
+
     <div class="page-header">
         <h1 th:text="'Pedido #' + ${request.id}">Detalhes do Pedido</h1>
         <div class="header-actions">
-            <a th:if="${request.canModify}" th:href="@{/rental-requests/{id}/edit(id=${request.id})}" class="btn btn-warning">Editar</a>
-            <a th:href="@{/rental-requests}" class="btn btn-secondary">Voltar</a>
+            <a th:if="${request.canModify}" th:href="@{/rental-requests/{id}/edit(id=${request.id})}" class="btn btn-warning">✏️ Editar</a>
+            <a th:href="@{/rental-requests}" class="btn btn-secondary">← Voltar</a>
         </div>
     </div>
 
     <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
+    <!-- Status Pipeline -->
+    <div class="status-pipeline">
+        <div class="pipeline-step"
+             th:classappend="${request.status == 'PENDING' ? 'active' :
+                              request.status != 'CANCELLED' ? 'completed' : 'completed'}">
+            <div class="pipeline-dot">1</div>
+            <span>Pendente</span>
+        </div>
+        <div class="pipeline-line" th:classappend="${request.status != 'PENDING' and request.status != 'CANCELLED' ? 'completed' : ''}"></div>
+        <div class="pipeline-step"
+             th:classappend="${request.status == 'UNDER_REVIEW' ? 'active' :
+                              (request.status == 'APPROVED' or request.status == 'CONTRACTED' or request.status == 'REJECTED') ? 'completed' : ''}">
+            <div class="pipeline-dot">2</div>
+            <span>Em Análise</span>
+        </div>
+        <div class="pipeline-line" th:classappend="${request.status == 'APPROVED' or request.status == 'CONTRACTED' ? 'completed' : ''}"></div>
+        <div class="pipeline-step"
+             th:classappend="${request.status == 'APPROVED' ? 'active' :
+                              request.status == 'CONTRACTED' ? 'completed' :
+                              request.status == 'REJECTED' ? 'failed' : ''}">
+            <div class="pipeline-dot" th:text="${request.status == 'REJECTED' ? '✕' : '3'}">3</div>
+            <span th:text="${request.status == 'REJECTED' ? 'Rejeitado' : 'Aprovado'}">Aprovado</span>
+        </div>
+        <div class="pipeline-line" th:classappend="${request.status == 'CONTRACTED' ? 'completed' : ''}"></div>
+        <div class="pipeline-step"
+             th:classappend="${request.status == 'CONTRACTED' ? 'completed' :
+                              request.status == 'CANCELLED' ? 'failed' : ''}">
+            <div class="pipeline-dot" th:text="${request.status == 'CANCELLED' ? '✕' : '4'}">4</div>
+            <span th:text="${request.status == 'CANCELLED' ? 'Cancelado' : 'Contratado'}">Contratado</span>
+        </div>
+    </div>
+
     <section class="card">
-        <h2>Informações do Pedido</h2>
+        <h2><span class="card-icon">📋</span> Informações do Pedido</h2>
         <div class="detail-grid">
             <div class="detail-item">
-                <label>ID</label>
-                <span th:text="${request.id}"></span>
+                <label>Pedido</label>
+                <span th:text="'#' + ${request.id}"></span>
             </div>
             <div class="detail-item">
                 <label>Cliente</label>
@@ -57,47 +95,52 @@
                                        request.status == 'REJECTED' ? 'badge-danger' :
                                        request.status == 'CANCELLED' ? 'badge-danger' :
                                        request.status == 'CONTRACTED' ? 'badge-info' :
+                                       request.status == 'UNDER_REVIEW' ? 'badge-purple' :
                                        'badge-warning'}"
-                      th:text="${request.status}"></span>
+                      th:text="${request.status == 'PENDING' ? 'Pendente' :
+                                request.status == 'UNDER_REVIEW' ? 'Em Análise' :
+                                request.status == 'APPROVED' ? 'Aprovado' :
+                                request.status == 'REJECTED' ? 'Rejeitado' :
+                                request.status == 'CONTRACTED' ? 'Contratado' :
+                                request.status == 'CANCELLED' ? 'Cancelado' : request.status}"></span>
             </div>
             <div class="detail-item" th:if="${request.evaluatedBy != null}">
                 <label>Avaliado por</label>
-                <span th:text="${request.evaluatedBy + ' (' + request.evaluatedByRole + ')'}"></span>
+                <span th:text="${request.evaluatedBy}"></span>
             </div>
             <div class="detail-item">
                 <label>Criado em</label>
                 <span th:text="${request.createdAt != null ? request.createdAt.toString().substring(0,16).replace('T',' ') : '—'}"></span>
             </div>
             <div class="detail-item">
-                <label>Atualizado em</label>
+                <label>Última atualização</label>
                 <span th:text="${request.updatedAt != null ? request.updatedAt.toString().substring(0,16).replace('T',' ') : '—'}"></span>
             </div>
         </div>
     </section>
 
     <section class="card" th:if="${request.notes != null and !request.notes.isEmpty()}">
-        <h2>Observações</h2>
-        <p th:text="${request.notes}" style="white-space: pre-wrap;"></p>
+        <h2><span class="card-icon">📝</span> Observações</h2>
+        <p th:text="${request.notes}" style="white-space: pre-wrap; color: var(--color-gray-700);"></p>
     </section>
 
     <section class="card" th:if="${request.car != null}">
-        <h2>Automóvel</h2>
+        <h2><span class="card-icon">🚗</span> Automóvel Vinculado</h2>
         <div class="detail-grid">
             <div class="detail-item"><label>Matrícula</label><span th:text="${request.car.registration}"></span></div>
-            <div class="detail-item"><label>Marca</label><span th:text="${request.car.brand}"></span></div>
-            <div class="detail-item"><label>Modelo</label><span th:text="${request.car.model}"></span></div>
+            <div class="detail-item"><label>Marca / Modelo</label><span th:text="${request.car.brand + ' ' + request.car.model}"></span></div>
             <div class="detail-item"><label>Ano</label><span th:text="${request.car.year}"></span></div>
             <div class="detail-item"><label>Placa</label><span th:text="${request.car.plate}"></span></div>
         </div>
     </section>
 
     <div class="form-actions">
-        <a th:if="${request.canModify}" th:href="@{/rental-requests/{id}/edit(id=${request.id})}" class="btn btn-warning">Editar</a>
+        <a th:if="${request.canModify}" th:href="@{/rental-requests/{id}/edit(id=${request.id})}" class="btn btn-warning">✏️ Editar</a>
         <form th:if="${request.canCancel}" th:action="@{/rental-requests/{id}/cancel(id=${request.id})}" method="post" class="inline-form"
               onsubmit="return confirm('Tem certeza que deseja cancelar este pedido?');">
-            <button type="submit" class="btn btn-danger">Cancelar Pedido</button>
+            <button type="submit" class="btn btn-danger">🚫 Cancelar Pedido</button>
         </form>
-        <a th:href="@{/rental-requests}" class="btn btn-secondary">Voltar à lista</a>
+        <a th:href="@{/rental-requests}" class="btn btn-secondary">← Voltar à lista</a>
     </div>
 
 </main>
@@ -110,6 +153,4 @@
 
 </body>
 </html>
-
-
 

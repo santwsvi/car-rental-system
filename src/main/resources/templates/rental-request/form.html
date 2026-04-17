@@ -21,9 +21,15 @@
 
 <main class="container main-content">
 
+    <div class="breadcrumb">
+        <a th:href="@{/rental-requests}">Pedidos</a>
+        <span class="breadcrumb-separator">›</span>
+        <span th:text="${action == 'edit' ? 'Editar' : 'Novo Pedido'}">Ação</span>
+    </div>
+
     <div class="page-header">
         <h1 th:text="${action == 'edit' ? 'Editar Pedido' : 'Novo Pedido de Aluguel'}">Formulário</h1>
-        <a th:href="@{/rental-requests}" class="btn btn-secondary">Voltar</a>
+        <a th:href="@{/rental-requests}" class="btn btn-secondary">← Voltar</a>
     </div>
 
     <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
@@ -31,7 +37,7 @@
     <form th:action="${action == 'edit' ? '/rental-requests/' + requestId : '/rental-requests'}" method="post" class="form-card">
 
         <fieldset class="form-section">
-            <legend>Dados do Pedido</legend>
+            <legend>📋 Dados do Pedido</legend>
 
             <div class="form-row" th:if="${action != 'edit'}">
                 <div class="form-group flex-2">
@@ -89,4 +95,6 @@
 
 </body>
 </html>
+
+
 

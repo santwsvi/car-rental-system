@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login — Car Rental System</title>
+    <link rel="stylesheet" th:href="@{/static/css/style.css}"/>
+    <style>
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+        .login-card {
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            padding: 3rem;
+            width: 100%;
+            max-width: 420px;
+        }
+        .login-card h1 {
+            text-align: center;
+            font-size: 1.75rem;
+            color: var(--color-gray-900);
+            margin-bottom: 0.5rem;
+        }
+        .login-card .subtitle {
+            text-align: center;
+            color: var(--color-gray-500);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        .login-card .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .login-card label {
+            display: block;
+            font-weight: 600;
+            color: var(--color-gray-700);
+            margin-bottom: 0.4rem;
+            font-size: 0.9rem;
+        }
+        .login-card input[type="email"],
+        .login-card input[type="password"] {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 1.5px solid var(--color-gray-300);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-family: var(--font-sans);
+            transition: border-color var(--transition);
+        }
+        .login-card input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px var(--color-primary-light);
+        }
+        .login-card .btn-login {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--color-primary);
+            color: var(--color-white);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background var(--transition);
+            margin-top: 0.5rem;
+        }
+        .login-card .btn-login:hover {
+            background: var(--color-primary-dark);
+        }
+        .login-error {
+            background: var(--color-danger-light);
+            color: var(--color-danger);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .login-logo {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body style="background: var(--color-gray-50);">
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-logo">🚗</div>
+        <h1>Car Rental System</h1>
+        <p class="subtitle">Faça login para continuar</p>
+
+        <div th:if="${param.error}" class="login-error">
+            E-mail ou senha inválidos. Tente novamente.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" placeholder="seu@email.com" required autofocus/>
+            </div>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" name="password" placeholder="••••••••" required/>
+            </div>
+            <button type="submit" class="btn-login">Entrar</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
+
