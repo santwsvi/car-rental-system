@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Detalhes do Contrato — Car Rental System</title>
+    <link rel="stylesheet" th:href="@{/static/css/style.css}"/>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="container navbar-content">
+        <a th:href="@{/}" class="navbar-brand">🚗 <span>Car Rental System</span></a>
+        <nav class="navbar-nav">
+            <a th:href="@{/clients}" class="nav-link">Clientes</a>
+            <a th:href="@{/rental-requests}" class="nav-link">Pedidos</a>
+            <a th:href="@{/agent/requests}" class="nav-link active">Painel Agente</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container main-content">
+
+    <div class="page-header">
+        <h1 th:text="'Contrato #' + ${contract.id}">Detalhes do Contrato</h1>
+        <a th:href="@{/agent/requests}" class="btn btn-secondary">Voltar</a>
+    </div>
+
+    <section class="card">
+        <h2>Contrato de Aluguel</h2>
+        <div class="detail-grid">
+            <div class="detail-item"><label>ID</label><span th:text="${contract.id}"></span></div>
+            <div class="detail-item"><label>Início</label><span th:text="${contract.startDate}"></span></div>
+            <div class="detail-item"><label>Término</label><span th:text="${contract.endDate}"></span></div>
+            <div class="detail-item"><label>Valor Total</label><span th:text="'R$ ' + ${contract.totalValue}"></span></div>
+            <div class="detail-item"><label>Proprietário</label><span th:text="${contract.carOwnerType + ' — ' + contract.carOwnerName}"></span></div>
+            <div class="detail-item"><label>Assinado em</label><span th:text="${contract.signedAt != null ? contract.signedAt.toString().substring(0,16).replace('T',' ') : '—'}"></span></div>
+        </div>
+    </section>
+
+    <section class="card" th:if="${credit != null}">
+        <h2>Contrato de Crédito</h2>
+        <div class="detail-grid">
+            <div class="detail-item"><label>Banco</label><span th:text="${credit.bankName}"></span></div>
+            <div class="detail-item"><label>Valor do Crédito</label><span th:text="'R$ ' + ${credit.creditValue}"></span></div>
+            <div class="detail-item"><label>Taxa de Juros</label><span th:text="${credit.interestRate + '% a.m.'}"></span></div>
+            <div class="detail-item"><label>Emitido em</label><span th:text="${credit.issuedAt != null ? credit.issuedAt.toString().substring(0,16).replace('T',' ') : '—'}"></span></div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>© 2026 Car Rental System — PUC Minas · Engenharia de Software</p>
+    </div>
+</footer>
+
+</body>
+</html>
+

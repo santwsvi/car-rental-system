@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${action == 'edit' ? 'Editar Pedido' : 'Novo Pedido'} + ' — Car Rental System'">Formulário</title>
+    <link rel="stylesheet" th:href="@{/static/css/style.css}"/>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="container navbar-content">
+        <a th:href="@{/}" class="navbar-brand">🚗 <span>Car Rental System</span></a>
+        <nav class="navbar-nav">
+            <a th:href="@{/clients}" class="nav-link">Clientes</a>
+            <a th:href="@{/rental-requests}" class="nav-link">Pedidos</a>
+            <a th:href="@{/agent/requests}" class="nav-link">Painel Agente</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container main-content">
+
+    <div class="page-header">
+        <h1 th:text="${action == 'edit' ? 'Editar Pedido' : 'Novo Pedido de Aluguel'}">Formulário</h1>
+        <a th:href="@{/rental-requests}" class="btn btn-secondary">Voltar</a>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <form th:action="${action == 'edit' ? '/rental-requests/' + requestId : '/rental-requests'}" method="post" class="form-card">
+
+        <fieldset class="form-section">
+            <legend>Dados do Pedido</legend>
+
+            <div class="form-row" th:if="${action != 'edit'}">
+                <div class="form-group flex-2">
+                    <label for="clientId">Cliente *</label>
+                    <select id="clientId" name="clientId" class="form-control" required>
+                        <option value="">— Selecione um cliente —</option>
+                        <option th:each="client : ${clients}"
+                                th:value="${client.id}"
+                                th:text="${client.name + ' (' + client.cpfMasked + ')'}"
+                                th:selected="${requestForm != null and requestForm.clientId != null and requestForm.clientId == client.id}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="startDate">Data de Início *</label>
+                    <input type="date" id="startDate" name="startDate"
+                           th:value="${requestForm != null and requestForm.startDate != null ? requestForm.startDate : ''}"
+                           class="form-control" required/>
+                </div>
+                <div class="form-group">
+                    <label for="endDate">Data de Término *</label>
+                    <input type="date" id="endDate" name="endDate"
+                           th:value="${requestForm != null and requestForm.endDate != null ? requestForm.endDate : ''}"
+                           class="form-control" required/>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group flex-2">
+                    <label for="notes">Observações</label>
+                    <textarea id="notes" name="notes" class="form-control" rows="4"
+                              th:text="${requestForm != null ? requestForm.notes : ''}"></textarea>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary"
+                    th:text="${action == 'edit' ? 'Salvar Alterações' : 'Criar Pedido'}">Salvar</button>
+            <a th:href="@{/rental-requests}" class="btn btn-secondary">Cancelar</a>
+        </div>
+
+    </form>
+
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>© 2026 Car Rental System — PUC Minas · Engenharia de Software</p>
+    </div>
+</footer>
+
+</body>
+</html>
+

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Conceder Crédito — Car Rental System</title>
+    <link rel="stylesheet" th:href="@{/static/css/style.css}"/>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="container navbar-content">
+        <a th:href="@{/}" class="navbar-brand">🚗 <span>Car Rental System</span></a>
+        <nav class="navbar-nav">
+            <a th:href="@{/clients}" class="nav-link">Clientes</a>
+            <a th:href="@{/rental-requests}" class="nav-link">Pedidos</a>
+            <a th:href="@{/agent/requests}" class="nav-link active">Painel Agente</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container main-content">
+
+    <div class="page-header">
+        <h1 th:text="'Conceder Crédito — Pedido #' + ${requestId}">Conceder Crédito</h1>
+        <a th:href="@{/agent/requests}" class="btn btn-secondary">Voltar</a>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <section class="card">
+        <h2>Resumo do Pedido</h2>
+        <div class="detail-grid">
+            <div class="detail-item"><label>Cliente</label><span th:text="${request.clientName}"></span></div>
+            <div class="detail-item"><label>Início</label><span th:text="${request.startDate}"></span></div>
+            <div class="detail-item"><label>Término</label><span th:text="${request.endDate}"></span></div>
+            <div class="detail-item"><label>Status</label><span class="badge badge-success" th:text="${request.status}"></span></div>
+        </div>
+    </section>
+
+    <form th:action="@{/contracts/credit}" method="post" class="form-card">
+        <input type="hidden" name="rentalRequestId" th:value="${requestId}"/>
+
+        <fieldset class="form-section">
+            <legend>Dados do Contrato de Crédito</legend>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="bankName">Nome do Banco *</label>
+                    <input type="text" id="bankName" name="bankName" class="form-control" required placeholder="Ex: Banco do Brasil"/>
+                </div>
+                <div class="form-group">
+                    <label for="creditValue">Valor do Crédito (R$) *</label>
+                    <input type="number" id="creditValue" name="creditValue" class="form-control" required step="0.01" min="0.01" placeholder="0.00"/>
+                </div>
+                <div class="form-group">
+                    <label for="interestRate">Taxa de Juros (% a.m.) *</label>
+                    <input type="number" id="interestRate" name="interestRate" class="form-control" required step="0.01" min="0.01" placeholder="1.50"/>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" onclick="return confirm('Confirma concessão de crédito?');">💳 Conceder Crédito</button>
+            <a th:href="@{/agent/requests}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>© 2026 Car Rental System — PUC Minas · Engenharia de Software</p>
+    </div>
+</footer>
+
+</body>
+</html>
+

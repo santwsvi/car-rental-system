@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Painel do Agente — Car Rental System</title>
+    <link rel="stylesheet" th:href="@{/static/css/style.css}"/>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="container navbar-content">
+        <a th:href="@{/}" class="navbar-brand">🚗 <span>Car Rental System</span></a>
+        <nav class="navbar-nav">
+            <a th:href="@{/clients}" class="nav-link">Clientes</a>
+            <a th:href="@{/rental-requests}" class="nav-link">Pedidos</a>
+            <a th:href="@{/agent/requests}" class="nav-link active">Painel Agente</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container main-content">
+
+    <div class="page-header">
+        <h1>🏢 Painel do Agente — Avaliação de Pedidos</h1>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+    <div class="table-responsive">
+        <table class="table" th:if="${!requests.isEmpty()}">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Início</th>
+                    <th>Término</th>
+                    <th>Status</th>
+                    <th>Avaliado por</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="req : ${requests}">
+                    <td th:text="${req.id}"></td>
+                    <td th:text="${req.clientName}"></td>
+                    <td th:text="${req.startDate}"></td>
+                    <td th:text="${req.endDate}"></td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${req.status == 'APPROVED' ? 'badge-success' :
+                                               req.status == 'REJECTED' ? 'badge-danger' :
+                                               req.status == 'CANCELLED' ? 'badge-danger' :
+                                               req.status == 'CONTRACTED' ? 'badge-info' :
+                                               'badge-warning'}"
+                              th:text="${req.status}"></span>
+                    </td>
+                    <td th:text="${req.evaluatedBy} ?: '—'"></td>
+                    <td class="actions">
+                        <a th:href="@{/agent/requests/{id}(id=${req.id})}" class="btn btn-sm btn-info">Avaliar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${requests.isEmpty()}" class="empty-state">
+        <p>Nenhum pedido encontrado.</p>
+    </div>
+
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>© 2026 Car Rental System — PUC Minas · Engenharia de Software</p>
+    </div>
+</footer>
+
+</body>
+</html>
+

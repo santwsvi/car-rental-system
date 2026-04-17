@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Executar Contrato — Car Rental System</title>
+    <link rel="stylesheet" th:href="@{/static/css/style.css}"/>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="container navbar-content">
+        <a th:href="@{/}" class="navbar-brand">🚗 <span>Car Rental System</span></a>
+        <nav class="navbar-nav">
+            <a th:href="@{/clients}" class="nav-link">Clientes</a>
+            <a th:href="@{/rental-requests}" class="nav-link">Pedidos</a>
+            <a th:href="@{/agent/requests}" class="nav-link active">Painel Agente</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container main-content">
+
+    <div class="page-header">
+        <h1 th:text="'Executar Contrato — Pedido #' + ${requestId}">Executar Contrato</h1>
+        <a th:href="@{/agent/requests}" class="btn btn-secondary">Voltar</a>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <!-- Resumo do pedido -->
+    <section class="card">
+        <h2>Resumo do Pedido</h2>
+        <div class="detail-grid">
+            <div class="detail-item"><label>Cliente</label><span th:text="${request.clientName}"></span></div>
+            <div class="detail-item"><label>Início</label><span th:text="${request.startDate}"></span></div>
+            <div class="detail-item"><label>Término</label><span th:text="${request.endDate}"></span></div>
+            <div class="detail-item"><label>Status</label><span class="badge badge-success" th:text="${request.status}"></span></div>
+        </div>
+    </section>
+
+    <form th:action="@{/contracts/execute}" method="post" class="form-card">
+        <input type="hidden" name="rentalRequestId" th:value="${requestId}"/>
+
+        <!-- Dados do Automóvel -->
+        <fieldset class="form-section">
+            <legend>Dados do Automóvel</legend>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="car.registration">Matrícula *</label>
+                    <input type="text" id="car.registration" name="car.registration" class="form-control" required placeholder="Ex: ABC123456"/>
+                </div>
+                <div class="form-group">
+                    <label for="car.plate">Placa *</label>
+                    <input type="text" id="car.plate" name="car.plate" class="form-control" required placeholder="Ex: BRA2E19" maxlength="10"/>
+                </div>
+                <div class="form-group">
+                    <label for="car.year">Ano *</label>
+                    <input type="number" id="car.year" name="car.year" class="form-control" required min="1900" max="2030"/>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="car.brand">Marca *</label>
+                    <input type="text" id="car.brand" name="car.brand" class="form-control" required placeholder="Ex: Toyota"/>
+                </div>
+                <div class="form-group">
+                    <label for="car.model">Modelo *</label>
+                    <input type="text" id="car.model" name="car.model" class="form-control" required placeholder="Ex: Corolla"/>
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- Dados do Contrato -->
+        <fieldset class="form-section">
+            <legend>Dados do Contrato</legend>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="totalValue">Valor Total (R$) *</label>
+                    <input type="number" id="totalValue" name="totalValue" class="form-control" required step="0.01" min="0" placeholder="0.00"/>
+                </div>
+                <div class="form-group">
+                    <label for="carOwnerType">Proprietário do Automóvel</label>
+                    <select id="carOwnerType" name="carOwnerType" class="form-control">
+                        <option value="CLIENT">Cliente</option>
+                        <option value="COMPANY">Empresa</option>
+                        <option value="BANK">Banco</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="carOwnerName">Nome do Proprietário</label>
+                    <input type="text" id="carOwnerName" name="carOwnerName" class="form-control" placeholder="Nome do proprietário"/>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" onclick="return confirm('Confirma execução do contrato?');">📝 Executar Contrato</button>
+            <a th:href="@{/agent/requests}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>© 2026 Car Rental System — PUC Minas · Engenharia de Software</p>
+    </div>
+</footer>
+
+</body>
+</html>
+

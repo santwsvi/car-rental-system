@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Avaliar Pedido — Car Rental System</title>
+    <link rel="stylesheet" th:href="@{/static/css/style.css}"/>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="container navbar-content">
+        <a th:href="@{/}" class="navbar-brand">🚗 <span>Car Rental System</span></a>
+        <nav class="navbar-nav">
+            <a th:href="@{/clients}" class="nav-link">Clientes</a>
+            <a th:href="@{/rental-requests}" class="nav-link">Pedidos</a>
+            <a th:href="@{/agent/requests}" class="nav-link active">Painel Agente</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container main-content">
+
+    <div class="page-header">
+        <h1 th:text="'Avaliar Pedido #' + ${request.id}">Avaliar Pedido</h1>
+        <a th:href="@{/agent/requests}" class="btn btn-secondary">Voltar</a>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <!-- Informações do Pedido -->
+    <section class="card">
+        <h2>Informações do Pedido</h2>
+        <div class="detail-grid">
+            <div class="detail-item"><label>Cliente</label><span th:text="${request.clientName}"></span></div>
+            <div class="detail-item"><label>Início</label><span th:text="${request.startDate}"></span></div>
+            <div class="detail-item"><label>Término</label><span th:text="${request.endDate}"></span></div>
+            <div class="detail-item">
+                <label>Status</label>
+                <span class="badge"
+                      th:classappend="${request.status == 'APPROVED' ? 'badge-success' :
+                                       request.status == 'REJECTED' ? 'badge-danger' :
+                                       request.status == 'CANCELLED' ? 'badge-danger' :
+                                       request.status == 'CONTRACTED' ? 'badge-info' :
+                                       'badge-warning'}"
+                      th:text="${request.status}"></span>
+            </div>
+            <div class="detail-item" th:if="${request.notes != null and !request.notes.isEmpty()}">
+                <label>Observações</label>
+                <span th:text="${request.notes}" style="white-space: pre-wrap;"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ações do Agente -->
+    <section class="card">
+        <h2>Ações do Agente</h2>
+
+        <!-- Enviar para Análise (PENDING → UNDER_REVIEW) -->
+        <div th:if="${request.status == 'PENDING'}" class="form-actions" style="margin-bottom: 1rem;">
+            <form th:action="@{/agent/requests/{id}/submit-review(id=${request.id})}" method="post" class="inline-form">
+                <button type="submit" class="btn btn-primary">📋 Enviar para Análise</button>
+            </form>
+        </div>
+
+        <!-- Aprovar / Rejeitar (UNDER_REVIEW → APPROVED / REJECTED) -->
+        <div th:if="${request.status == 'UNDER_REVIEW'}">
+            <div class="form-card" style="margin-bottom: 1rem;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nome do Agente</label>
+                        <input type="text" id="agentNameGlobal" class="form-control" value="Agente Avaliador" />
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo do Agente</label>
+                        <select id="agentRoleGlobal" class="form-control">
+                            <option value="AGENT_COMPANY">Empresa</option>
+                            <option value="AGENT_BANK">Banco</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <form th:action="@{/agent/requests/{id}/approve(id=${request.id})}" method="post" class="inline-form"
+                          onsubmit="this.querySelector('[name=agentName]').value=document.getElementById('agentNameGlobal').value; this.querySelector('[name=agentRole]').value=document.getElementById('agentRoleGlobal').value;">
+                        <input type="hidden" name="agentName" value=""/>
+                        <input type="hidden" name="agentRole" value=""/>
+                        <button type="submit" class="btn btn-success">✅ Aprovar</button>
+                    </form>
+                    <form th:action="@{/agent/requests/{id}/reject(id=${request.id})}" method="post" class="inline-form"
+                          onsubmit="this.querySelector('[name=agentName]').value=document.getElementById('agentNameGlobal').value; this.querySelector('[name=agentRole]').value=document.getElementById('agentRoleGlobal').value; return confirm('Confirma rejeição?');">
+                        <input type="hidden" name="agentName" value=""/>
+                        <input type="hidden" name="agentRole" value=""/>
+                        <button type="submit" class="btn btn-danger">❌ Rejeitar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Executar Contrato / Conceder Crédito (APPROVED) -->
+        <div th:if="${request.status == 'APPROVED'}" class="form-actions" style="margin-bottom: 1rem;">
+            <a th:href="@{/contracts/execute/{id}(id=${request.id})}" class="btn btn-primary">📝 Executar Contrato</a>
+            <a th:href="@{/contracts/credit/{id}(id=${request.id})}" class="btn btn-info">💳 Conceder Crédito</a>
+        </div>
+
+        <!-- Modificar Pedido -->
+        <div th:if="${request.canModify}" style="margin-top: 1rem;">
+            <a th:href="@{/agent/requests/{id}/edit(id=${request.id})}" class="btn btn-warning">✏️ Modificar Pedido</a>
+        </div>
+
+        <div th:if="${request.status == 'CONTRACTED'}">
+            <p class="text-muted">✅ Este pedido já possui contrato executado.</p>
+        </div>
+
+        <div th:if="${request.status == 'REJECTED'}">
+            <p class="text-muted">❌ Este pedido foi rejeitado.</p>
+        </div>
+
+        <div th:if="${request.status == 'CANCELLED'}">
+            <p class="text-muted">🚫 Este pedido foi cancelado pelo cliente.</p>
+        </div>
+    </section>
+
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>© 2026 Car Rental System — PUC Minas · Engenharia de Software</p>
+    </div>
+</footer>
+
+</body>
+</html>
+
