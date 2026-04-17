@@ -171,9 +171,17 @@ public class ClientController {
 
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Post("/{id}/delete")
-    public HttpResponse<?> delete(@PathVariable Long id) {
-        clientService.delete(id);
-        return HttpResponse.redirect(URI.create("/clients?success=Cliente+removido+com+sucesso!"));
+    public Object delete(@PathVariable Long id) {
+        try {
+            clientService.delete(id);
+            return HttpResponse.redirect(URI.create("/clients?success=Cliente+removido+com+sucesso!"));
+        } catch (BusinessRuleException ex) {
+            Map<String, Object> model = new HashMap<>();
+            ClientResponseDTO client = clientService.findById(id);
+            model.put("client", client);
+            model.put("errorMessage", ex.getMessage());
+            return new ModelAndView<>("client/detail", model);
+        }
     }
 
     // ═══════════════════════════════════════════════════════

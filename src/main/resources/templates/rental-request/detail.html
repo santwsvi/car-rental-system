@@ -29,6 +29,8 @@
         </div>
     </div>
 
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
     <section class="card">
         <h2>Informações do Pedido</h2>
         <div class="detail-grid">
@@ -108,4 +110,6 @@
 
 </body>
 </html>
+
+
 

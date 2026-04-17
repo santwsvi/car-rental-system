@@ -42,7 +42,7 @@ public class Car {
     private String registration;
 
     @NotNull(message = "Ano é obrigatório")
-    @Column(nullable = false)
+    @Column(name = "car_year", nullable = false)
     private Integer year;
 
     @NotBlank(message = "Marca é obrigatória")
@@ -68,4 +68,5 @@ public class Car {
         this.createdAt = LocalDateTime.now();
     }
 }
+
 

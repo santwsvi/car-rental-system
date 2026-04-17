@@ -7,6 +7,7 @@ import com.pucminas.car_rental_system.domain.mapper.ClientMapper;
 import com.pucminas.car_rental_system.exception.BusinessRuleException;
 import com.pucminas.car_rental_system.exception.ResourceNotFoundException;
 import com.pucminas.car_rental_system.repository.ClientRepository;
+import com.pucminas.car_rental_system.repository.RentalRequestRepository;
 import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 
@@ -27,10 +28,13 @@ public class ClientService {
 
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
+    private final RentalRequestRepository rentalRequestRepository;
 
-    public ClientService(ClientRepository clientRepository, ClientMapper clientMapper) {
+    public ClientService(ClientRepository clientRepository, ClientMapper clientMapper,
+                         RentalRequestRepository rentalRequestRepository) {
         this.clientRepository = clientRepository;
         this.clientMapper = clientMapper;
+        this.rentalRequestRepository = rentalRequestRepository;
     }
 
     // ═══════════════════════════════════════════════════════
@@ -94,6 +98,10 @@ public class ClientService {
     public void delete(Long id) {
         if (!clientRepository.existsById(id)) {
             throw new ResourceNotFoundException("Cliente", id);
+        }
+        if (!rentalRequestRepository.findByClientId(id).isEmpty()) {
+            throw new BusinessRuleException(
+                    "Não é possível excluir este cliente pois existem pedidos de aluguel vinculados.");
         }
         clientRepository.deleteById(id);
     }

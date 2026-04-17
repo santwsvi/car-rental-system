@@ -55,7 +55,6 @@ public class ClientRequestDTO {
     @Builder.Default
     private AddressDTO address = new AddressDTO();
 
-    @Valid
     @Size(max = 3, message = "Máximo de 3 empregadores")
     @Builder.Default
     private List<EmployerDTO> employers = new ArrayList<>(List.of(

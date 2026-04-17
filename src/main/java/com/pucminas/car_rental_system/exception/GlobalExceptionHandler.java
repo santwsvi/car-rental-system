@@ -29,6 +29,12 @@ public class GlobalExceptionHandler {
         return Map.of("message", ex.getMessage());
     }
 
+    @Error(exception = IllegalStateException.class, global = true)
+    @View("error/422")
+    public Map<String, Object> handleIllegalState(HttpRequest<?> request, IllegalStateException ex) {
+        return Map.of("message", ex.getMessage());
+    }
+
     @Error(status = HttpStatus.NOT_FOUND, global = true)
     @View("error/404")
     public Map<String, Object> handleNotFound(HttpRequest<?> request) {

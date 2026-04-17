@@ -29,6 +29,8 @@
         </div>
     </div>
 
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
     <!-- Dados Pessoais -->
     <section class="card">
         <h2>Dados Pessoais</h2>
@@ -141,4 +143,5 @@
 
 </body>
 </html>
+
 

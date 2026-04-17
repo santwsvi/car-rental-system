@@ -153,9 +153,16 @@ public class RentalRequestController {
 
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Post("/{id}/cancel")
-    public HttpResponse<?> cancel(@PathVariable Long id) {
-        rentalRequestService.cancel(id);
-        return HttpResponse.redirect(URI.create("/rental-requests?success=Pedido+cancelado+com+sucesso!"));
+    public Object cancel(@PathVariable Long id) {
+        try {
+            rentalRequestService.cancel(id);
+            return HttpResponse.redirect(URI.create("/rental-requests?success=Pedido+cancelado+com+sucesso!"));
+        } catch (BusinessRuleException ex) {
+            Map<String, Object> model = new HashMap<>();
+            model.put("request", rentalRequestService.findById(id));
+            model.put("errorMessage", ex.getMessage());
+            return new ModelAndView<>("rental-request/detail", model);
+        }
     }
 
     // ═══ HELPERS ═══
@@ -194,4 +201,5 @@ public class RentalRequestController {
         return null;
     }
 }
+
 
