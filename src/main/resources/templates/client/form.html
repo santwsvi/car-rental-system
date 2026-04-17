@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${action == 'edit' ? 'Editar Cliente' : 'Novo Cliente'} + ' — Car Rental System'">Formulário</title>
+    <link rel="stylesheet" th:href="@{/static/css/style.css}"/>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="container navbar-content">
+        <a th:href="@{/}" class="navbar-brand">🚗 <span>Car Rental System</span></a>
+        <nav class="navbar-nav">
+            <a th:href="@{/clients}" class="nav-link">Clientes</a>
+            <a th:href="@{/rental-requests}" class="nav-link">Pedidos</a>
+            <a th:href="@{/agent/requests}" class="nav-link">Painel Agente</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container main-content">
+
+    <div class="page-header">
+        <h1 th:text="${action == 'edit' ? 'Editar Cliente' : 'Novo Cliente'}">Formulário</h1>
+        <a th:href="@{/clients}" class="btn btn-secondary">Voltar</a>
+    </div>
+
+    <!-- Mensagens de erro -->
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <!-- Formulário -->
+    <form th:action="${action == 'edit' ? '/clients/' + clientId : '/clients'}" method="post" class="form-card">
+
+        <!-- ═══ DADOS PESSOAIS ═══ -->
+        <fieldset class="form-section">
+            <legend>Dados Pessoais</legend>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">Nome *</label>
+                    <input type="text" id="name" name="name" th:value="${clientForm.name}" class="form-control"
+                           placeholder="Nome completo" required/>
+                    <span th:if="${fieldErrors != null and fieldErrors.containsKey('name')}"
+                          th:text="${fieldErrors.get('name')}" class="field-error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="email">E-mail *</label>
+                    <input type="email" id="email" name="email" th:value="${clientForm.email}" class="form-control"
+                           placeholder="email@exemplo.com" required/>
+                    <span th:if="${fieldErrors != null and fieldErrors.containsKey('email')}"
+                          th:text="${fieldErrors.get('email')}" class="field-error"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password" th:text="${action == 'edit' ? 'Senha (deixe em branco para manter)' : 'Senha *'}">Senha</label>
+                    <input type="password" id="password" name="password" class="form-control"
+                           placeholder="Mínimo 6 caracteres" th:required="${action != 'edit'}"/>
+                    <span th:if="${fieldErrors != null and fieldErrors.containsKey('password')}"
+                          th:text="${fieldErrors.get('password')}" class="field-error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="profession">Profissão</label>
+                    <input type="text" id="profession" name="profession" th:value="${clientForm.profession}" class="form-control"
+                           placeholder="Ex: Engenheiro de Software"/>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="cpf">CPF *</label>
+                    <input type="text" id="cpf" name="cpf" th:value="${clientForm.cpf}" class="form-control"
+                           placeholder="000.000.000-00" required maxlength="14"/>
+                    <span th:if="${fieldErrors != null and fieldErrors.containsKey('cpf')}"
+                          th:text="${fieldErrors.get('cpf')}" class="field-error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="rg">RG *</label>
+                    <input type="text" id="rg" name="rg" th:value="${clientForm.rg}" class="form-control"
+                           placeholder="MG-00.000.000" required maxlength="20"/>
+                    <span th:if="${fieldErrors != null and fieldErrors.containsKey('rg')}"
+                          th:text="${fieldErrors.get('rg')}" class="field-error"></span>
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- ═══ ENDEREÇO ═══ -->
+        <fieldset class="form-section">
+            <legend>Endereço</legend>
+
+            <div class="form-row">
+                <div class="form-group flex-2">
+                    <label for="address.street">Rua *</label>
+                    <input type="text" id="address.street" name="address.street" th:value="${clientForm.address != null ? clientForm.address.street : ''}" class="form-control"
+                           placeholder="Rua / Avenida" required/>
+                </div>
+                <div class="form-group">
+                    <label for="address.number">Número *</label>
+                    <input type="text" id="address.number" name="address.number" th:value="${clientForm.address != null ? clientForm.address.number : ''}" class="form-control"
+                           placeholder="Nº" required maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label for="address.complement">Complemento</label>
+                    <input type="text" id="address.complement" name="address.complement" th:value="${clientForm.address != null ? clientForm.address.complement : ''}" class="form-control"
+                           placeholder="Apto, Sala..."/>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="address.city">Cidade *</label>
+                    <input type="text" id="address.city" name="address.city" th:value="${clientForm.address != null ? clientForm.address.city : ''}" class="form-control"
+                           placeholder="Cidade" required/>
+                </div>
+                <div class="form-group">
+                    <label for="address.state">Estado *</label>
+                    <input type="text" id="address.state" name="address.state" th:value="${clientForm.address != null ? clientForm.address.state : ''}" class="form-control"
+                           placeholder="UF" required maxlength="50"/>
+                </div>
+                <div class="form-group">
+                    <label for="address.zipCode">CEP *</label>
+                    <input type="text" id="address.zipCode" name="address.zipCode" th:value="${clientForm.address != null ? clientForm.address.zipCode : ''}" class="form-control"
+                           placeholder="00000-000" required maxlength="10"/>
+                </div>
+                <div class="form-group">
+                    <label for="address.country">País</label>
+                    <input type="text" id="address.country" name="address.country" th:value="${clientForm.address != null ? clientForm.address.country : ''}" class="form-control"
+                           placeholder="Brasil"/>
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- ═══ EMPREGADORES (0..3) ═══ -->
+        <fieldset class="form-section">
+            <legend>Empregadores <small class="text-muted">(máximo 3)</small></legend>
+
+            <div id="employers-container">
+                <div class="employer-row" th:each="i : ${#numbers.sequence(0, 2)}">
+                    <span class="employer-label" th:text="'Empregador ' + (${i} + 1)">Empregador</span>
+                    <div class="form-row">
+                        <div class="form-group flex-2">
+                            <label th:for="'employers[' + ${i} + '].name'">Nome da empresa</label>
+                            <input type="text" th:id="'employers[' + ${i} + '].name'"
+                                   th:name="'employers[' + ${i} + '].name'"
+                                   th:value="${clientForm.employers != null and clientForm.employers.size() > i ? clientForm.employers[i].name : ''}"
+                                   class="form-control" placeholder="Nome do empregador"/>
+                        </div>
+                        <div class="form-group">
+                            <label th:for="'employers[' + ${i} + '].income'">Rendimento (R$)</label>
+                            <input type="number" th:id="'employers[' + ${i} + '].income'"
+                                   th:name="'employers[' + ${i} + '].income'"
+                                   th:value="${clientForm.employers != null and clientForm.employers.size() > i ? clientForm.employers[i].income : ''}"
+                                   class="form-control" placeholder="0.00" step="0.01" min="0"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- ═══ BOTÕES ═══ -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary"
+                    th:text="${action == 'edit' ? 'Salvar Alterações' : 'Cadastrar Cliente'}">Salvar</button>
+            <a th:href="@{/clients}" class="btn btn-secondary">Cancelar</a>
+        </div>
+
+    </form>
+
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>© 2026 Car Rental System — PUC Minas · Engenharia de Software</p>
+    </div>
+</footer>
+
+</body>
+</html>
+

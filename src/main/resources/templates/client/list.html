@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="'Clientes — Car Rental System'">Clientes</title>
+    <link rel="stylesheet" th:href="@{/static/css/style.css}"/>
+</head>
+<body>
+
+<!-- ═══ NAVBAR ═══ -->
+<header class="navbar">
+    <div class="container navbar-content">
+        <a th:href="@{/}" class="navbar-brand">🚗 <span>Car Rental System</span></a>
+        <nav class="navbar-nav">
+            <a th:href="@{/clients}" class="nav-link active">Clientes</a>
+            <a th:href="@{/rental-requests}" class="nav-link">Pedidos</a>
+            <a th:href="@{/agent/requests}" class="nav-link">Painel Agente</a>
+        </nav>
+    </div>
+</header>
+
+<!-- ═══ CONTEÚDO ═══ -->
+<main class="container main-content">
+
+    <div class="page-header">
+        <h1>Clientes Cadastrados</h1>
+        <a th:href="@{/clients/new}" class="btn btn-primary">+ Novo Cliente</a>
+    </div>
+
+    <!-- Flash messages -->
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <!-- Tabela de clientes -->
+    <div class="table-responsive">
+        <table class="table" th:if="${!clients.isEmpty()}">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>CPF</th>
+                    <th>Profissão</th>
+                    <th>Cidade</th>
+                    <th>Empregadores</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="client : ${clients}">
+                    <td th:text="${client.id}"></td>
+                    <td th:text="${client.name}"></td>
+                    <td th:text="${client.email}"></td>
+                    <td th:text="${client.cpfMasked}"></td>
+                    <td th:text="${client.profession} ?: '—'"></td>
+                    <td th:text="${client.address != null ? client.address.city : '—'}"></td>
+                    <td th:text="${client.employers != null ? client.employers.size() : 0}"></td>
+                    <td class="actions">
+                        <a th:href="@{/clients/{id}(id=${client.id})}" class="btn btn-sm btn-info">Ver</a>
+                        <a th:href="@{/clients/{id}/edit(id=${client.id})}" class="btn btn-sm btn-warning">Editar</a>
+                        <form th:action="@{/clients/{id}/delete(id=${client.id})}" method="post" class="inline-form"
+                              onsubmit="return confirm('Tem certeza que deseja excluir este cliente?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${clients.isEmpty()}" class="empty-state">
+        <p>Nenhum cliente cadastrado ainda.</p>
+        <a th:href="@{/clients/new}" class="btn btn-primary">Cadastrar primeiro cliente</a>
+    </div>
+
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>© 2026 Car Rental System — PUC Minas · Engenharia de Software</p>
+    </div>
+</footer>
+
+</body>
+</html>
+
+

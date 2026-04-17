@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>404 — Recurso não encontrado</title>
+    <link rel="stylesheet" th:href="@{/static/css/style.css}"/>
+</head>
+<body>
+<header class="navbar">
+    <div class="container navbar-content">
+        <a th:href="@{/}" class="navbar-brand">🚗 <span>Car Rental System</span></a>
+    </div>
+</header>
+<main class="container main-content">
+    <div class="error-page">
+        <h1>404</h1>
+        <h2>Recurso não encontrado</h2>
+        <p th:text="${message} ?: 'O recurso solicitado não foi encontrado.'"></p>
+        <a th:href="@{/clients}" class="btn btn-primary">Voltar à lista de clientes</a>
+    </div>
+</main>
+<footer class="footer">
+    <div class="container"><p>© 2026 Car Rental System — PUC Minas</p></div>
+</footer>
+</body>
+</html>
+
