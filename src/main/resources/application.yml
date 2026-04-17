@@ -1,0 +1,33 @@
+micronaut:
+  application:
+    name: car-rental-system
+  server:
+    port: 8080
+  views:
+    folder: templates
+  router:
+    static-resources:
+      default:
+        enabled: true
+        mapping: /static/**
+        paths: classpath:static
+
+datasources:
+  default:
+    url: jdbc:h2:mem:carrentaldb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+jpa:
+  default:
+    entity-scan:
+      packages:
+        - com.pucminas.car_rental_system.domain.entity
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
+        show_sql: true
+        format_sql: true
+
